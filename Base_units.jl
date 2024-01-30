@@ -27,14 +27,14 @@ mutable struct BaseUnits
     function BaseUnits(system::String)
         new_system = system in ["SI", "CGS"] ? system : throw(Exception("Unit system must be either 'SI' or 'CGS'"))
         obj = new(new_system)
-        set_base_physical_values!(obj)  # Set the physical constants based on the system
+        set_base_physical_values(obj)  # Set the physical constants based on the system
         return obj
     end
 end
 
 
 """
-    set_base_physical_values!(obj::BaseUnits)
+    set_base_physical_values(obj::BaseUnits)
 
 Sets the base physical values based on the system specified in the object.
 """
@@ -48,7 +48,7 @@ end
 
 
 """
-    set_base_physical_values_SI!(obj::BaseUnits)
+    set_base_physical_values_SI(obj::BaseUnits)
 
 Sets the base physical values for the SI (International System of Units) unit system.
 This function initializes the physical constants in the BaseUnits object with their respective values in the SI system.
@@ -79,7 +79,7 @@ function set_base_physical_values_SI(obj::BaseUnits)
 end
 
 """
-    set_base_physical_values_CGS!(obj::BaseUnits)
+    set_base_physical_values_CGS(obj::BaseUnits)
 
 Sets the base physical values for the CGS (Centimeter-Gram-Second) unit system.
 This function initializes the physical constants in the BaseUnits object with their respective values in the CGS system.
@@ -168,7 +168,7 @@ end
 
 
 """
-    scale_base_units!(units::BaseUnits, eps_0_scaling::Float64, mu_0_scaling::Float64, m_e_scaling::Float64, charge_scaling::Float64)
+    scale_base_units(units::BaseUnits, eps_0_scaling::Float64, mu_0_scaling::Float64, m_e_scaling::Float64, charge_scaling::Float64)
 
 Scales specific base units by the given scaling factors.
 """
