@@ -146,7 +146,26 @@ mutable struct ScalingCGS
     e_code::Float64      
     G_code::Float64      
     eV_code::Float64     
+
+
+    #For Macro particle weights
+    ds :: Float64
+    per_cell :: Float64
+    weight_scaled :: Float64
+    weight_scaled_mass_proton :: Float64 
+    weight_scaled_mass_electron :: Float64 
+    weight_scaled_charge :: Float64 
+    rho_n_ratio :: Float64 
     
+    #Lorentz-Maxwell Unit conversions
+    k_E  :: Float64
+    k_B  :: Float64 
+    k_F  :: Float64 
+    k_D  :: Float64
+    k_M  :: Float64 
+    k_H  :: Float64
+
+
 
     function ScalingCGS(base_units, number_density=1e15, length=1e8, temperature=1e6, temperature_e=1e6, temperature_p=1e6, B_flux=1e1, length_scale=3e8, mass_density_scale=1e-13, time_scale=1.0)
         system = base_units.system
@@ -156,11 +175,16 @@ mutable struct ScalingCGS
         set_derived_real_values(obj)
         set_scaling_factors(obj)
         calculate_code_values(obj)
+        set_Maxwell_Lorentz(obj)        
         return obj
     end
 end
 
+"""
+    copy_base_units
 
+Copies the base unit from the BaseUnits struct to the ScalingCGS struct
+"""
 function copy_base_units(obj::ScalingCGS)
     # Copy base unit values from BaseUnits to ScalingCGS
     obj.eps_0_real = obj.base_units.eps_0   # Permittivity of free space [unitless in CGS]
@@ -177,7 +201,18 @@ function copy_base_units(obj::ScalingCGS)
 end
 
 
+"""
+    set_derived_real_values
 
+Calcualtes all real values used in the scaling struct
+    Depends on the input parameters: 
+        - number_density
+        - length
+        - temperature
+        - temperature_e
+        - temperature_p
+        - B_flux
+"""
 function set_derived_real_values(obj::ScalingCGS)
     #Calculate mu_real
     # Note -we calculate this to account for scaled electron masses which may change mu
@@ -327,6 +362,54 @@ function calculate_code_values(obj::ScalingCGS)
     obj.time_code = obj.time_real / obj.time_scaling
 end
 
+
+
+function set_macro_particle_weights(obj::ScalingCGS, ds, per_cell)
+    obj.ds = ds
+    obj.per_cell = per_cell
+
+    obj.weight_scaled = obj.number_density_code * ds^3 / per_cell
+
+    obj.weight_scaled_mass_proton = obj.weight_scaled * obj.m_p_code
+    obj.weight_scaled_mass_electron = obj.weight_scaled * obj.m_e_code
+    obj.weight_scaled_charge = obj.weight_scaled * obj.e_code
+
+    obj.rho_n_ratio = 1. / (2. * obj.mu_code * obj.m_u_code)
+end
+
+
+function set_Maxwell_Lorentz(obj:: ScalingCGS)
+    obj.k_E = 1. 
+    obj.k_B = 1. / obj.c_code
+    obj.k_F = 1. / obj.c_code
+
+    obj.k_D = 1. 
+    obj.k_M = obj.c_code
+    obj.k_H = 1.
+end 
+
+
+function print_Maxwell_Lorentz(obj :: ScalingCGS)
+    @printf("\n Maxwell Lorents Factors used in code:\n")
+    @printf("%-50s = % .4e \n", " k_E = ", obj.k_E)
+    @printf("%-50s = % .4e \n", " k_B = ", obj.k_B)
+    @printf("%-50s = % .4e \n", " k_F = ", obj.k_F)
+    @printf("%-50s = % .4e \n", " k_D = ", obj.k_D)
+    @printf("%-50s = % .4e \n", " k_M = ", obj.k_M)
+    @printf("%-50s = % .4e \n", " k_H = ", obj.k_H)
+end
+
+function print_Macro_particle_weights(obj :: ScalingCGS)
+    @printf("\n Macro particle weights:\n")
+    @printf("%-50s = % .4e \n", "                          ds = ", obj.ds           )
+    @printf("%-50s = % .4e \n", "                    per_cell = ", obj.per_cell     )
+    @printf("%-50s = % .4e \n", "               weight_scaled = ", obj.weight_scaled)
+    @printf("%-50s = % .4e \n", " weight_scaled_mass_electron = ", obj.weight_scaled_mass_electron)
+    @printf("%-50s = % .4e \n", "   weight_scaled_mass_proton = ", obj.weight_scaled_mass_proton)
+    @printf("%-50s = % .4e \n", "        weight_scaled_charge = ", obj.weight_scaled_charge)
+    @printf("%-50s = % .4e \n", "                 rho_n_ratio = ", obj.rho_n_ratio)
+end
+
 function print_fundamentals(obj::ScalingCGS)
     @printf("\n Fundamental physical constants:\n")
     @printf("%-50s = % .4e % .4e % .4e\n", "        Gravitational Constant [ cm^3 g^-1 s^-2 ]", obj.G_real, obj.G_scaling, obj.G_code)
@@ -395,6 +478,8 @@ function print_other(obj::ScalingCGS)
 end
 
 function print_all_CGS(obj::ScalingCGS)
+    print_Maxwell_Lorentz(obj)
+    print_Macro_particle_weights(obj)
     print_fundamentals(obj)
     print_defining_constants(obj)
     print_velocities(obj)
@@ -402,20 +487,9 @@ function print_all_CGS(obj::ScalingCGS)
     print_lengths(obj)
     print_other(obj)
 end
-# Example usage:
-# base = BaseUnits("CGS")
-# scaling = ScalingCGS(base)
-# print_fundamentals(scaling)
 
 
-# Example usage:
-# base = BaseUnits("CGS")
-# scaling = ScalingCGS(base)
-# print_fundamentals(scaling)
-
-
-
-# Example usage
+# ------------- Example usage---------------------------
 base = BaseUnits("CGS")
 
 eps_0_scaling = 1e0; mu_0_scaling = 1e0; charge_scaling = 1e0; electron_mass_scaling = 1e0
@@ -428,4 +502,12 @@ scaling = ScalingCGS(base,
                 number_density, length, temperature, temperature_e, temperature_p, B_flux,
                 length_scale, mass_density_scale, time_scale)
 
+
+
+ds = 0.1
+per_cell = 10.
+
+set_macro_particle_weights(scaling, ds, per_cell)
+
 print_all_CGS(scaling)
+#------------------------------------------------------------------------------------------
