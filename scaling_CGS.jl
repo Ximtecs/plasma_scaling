@@ -233,8 +233,8 @@ function set_derived_real_values(obj::ScalingCGS)
     obj.v_a_real *= obj.c_real / sqrt(obj.v_a_real^2 + obj.c_real^2)
 
     # Calculate electron and proton thermal velocities [cm/s]
-    obj.v_thermal_e_real = sqrt(obj.k_B_real * obj.temperature_real / obj.m_e_real)
-    obj.v_thermal_p_real = sqrt(obj.k_B_real * obj.temperature_real / obj.m_p_real)
+    obj.v_thermal_e_real = sqrt(obj.k_B_real * obj.temperature_e_real / obj.m_e_real)
+    obj.v_thermal_p_real = sqrt(obj.k_B_real * obj.temperature_p_real / obj.m_p_real)
 
     # Calculate frequencies [rad/s]
     obj.electron_gyro_freq_real = obj.e_real * obj.B_flux_real / (obj.m_e_real * obj.c_real)
