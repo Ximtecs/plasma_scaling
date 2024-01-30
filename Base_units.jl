@@ -172,10 +172,12 @@ end
 
 Scales specific base units by the given scaling factors.
 """
-function scale_base_units(units::BaseUnits, eps_0_scaling::Float64 = 1.0, mu_0_scaling::Float64 = 1.0, m_e_scaling::Float64 = 1.0, charge_scaling::Float64 = 1.0)
+function scale_base_units(units::BaseUnits, eps_0_scaling::Float64, mu_0_scaling::Float64, m_e_scaling::Float64, charge_scaling::Float64)
     units.eps_0 *= eps_0_scaling
     units.mu_0 *= mu_0_scaling
     units.e *= charge_scaling
     units.m_e *= m_e_scaling
+
+    units.c = 1 / sqrt(units.eps_0 * units.mu_0)
 end
 
