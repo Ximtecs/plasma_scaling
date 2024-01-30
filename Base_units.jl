@@ -38,11 +38,11 @@ end
 
 Sets the base physical values based on the system specified in the object.
 """
-function set_base_physical_values!(obj::BaseUnits)
+function set_base_physical_values(obj::BaseUnits)
     if obj.system == "SI"
-        set_base_physical_values_SI!(obj)
+        set_base_physical_values_SI(obj)
     elseif obj.system == "CGS"
-        set_base_physical_values_CGS!(obj)
+        set_base_physical_values_CGS(obj)
     end
 end
 
@@ -53,7 +53,7 @@ end
 Sets the base physical values for the SI (International System of Units) unit system.
 This function initializes the physical constants in the BaseUnits object with their respective values in the SI system.
 """
-function set_base_physical_values_SI!(obj::BaseUnits)
+function set_base_physical_values_SI(obj::BaseUnits)
     # Permittivity of free space in F/m (farads per meter)
     obj.eps_0 = 8.8541878128e-12
     # Permeability of free space in H/m (henrys per meter)
@@ -84,7 +84,7 @@ end
 Sets the base physical values for the CGS (Centimeter-Gram-Second) unit system.
 This function initializes the physical constants in the BaseUnits object with their respective values in the CGS system.
 """
-function set_base_physical_values_CGS!(obj::BaseUnits)
+function set_base_physical_values_CGS(obj::BaseUnits)
     # Permittivity of free space in s^2·cm^-2 (seconds squared per centimeter squared)
     obj.eps_0 = 1.1126500560536184e-21
     # Permeability of free space, unitless in CGS
@@ -164,3 +164,18 @@ function print_all_CGS(obj::BaseUnits)
     @printf("         G = %.4e [cm^3·g^-1·s^-2] (Gravitational constant)\n", obj.G)
     @printf("        eV = %.4e [erg] (Electron Volt)\n", obj.eV)
 end
+
+
+
+"""
+    scale_base_units!(units::BaseUnits, eps_0_scaling::Float64, mu_0_scaling::Float64, m_e_scaling::Float64, charge_scaling::Float64)
+
+Scales specific base units by the given scaling factors.
+"""
+function scale_base_units(units::BaseUnits, eps_0_scaling::Float64 = 1.0, mu_0_scaling::Float64 = 1.0, m_e_scaling::Float64 = 1.0, charge_scaling::Float64 = 1.0)
+    units.eps_0 *= eps_0_scaling
+    units.mu_0 *= mu_0_scaling
+    units.e *= charge_scaling
+    units.m_e *= m_e_scaling
+end
+
