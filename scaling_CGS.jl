@@ -462,6 +462,7 @@ function print_lengths(obj::ScalingCGS)
     @printf("%-50s = % .4e % .4e % .4e\n", "           electron skin depth [ cm ]", obj.skin_depth_real, obj.skin_depth_scaling, obj.skin_depth_code)
     @printf("%-50s = % .4e % .4e % .4e\n", "             proton skin depth [ cm ]", obj.skin_depth_p_real, obj.skin_depth_p_scaling, obj.skin_depth_p_code)
     @printf("%-50s = % .4e % .4e % .4e\n", "                 debye Length  [ cm ]", obj.debye_len_real, obj.debye_len_scaling, obj.debye_len_code)
+    @printf("%-50s = % .4e % .4e % .4e\n", "       inter particle distance [ cm ]", obj.inter_dist_real, obj.inter_dist_scaling, obj.inter_dist_code)
     @printf("%-50s = % .4e % .4e % .4e\n", "          electron gyro radius [ cm ]", obj.e_gyro_radiues_real, obj.e_gyro_radiues_scaling, obj.e_gyro_radiues_code)
     @printf("%-50s = % .4e % .4e % .4e\n", "            proton gyro radius [ cm ]", obj.p_gyro_radiues_real, obj.p_gyro_radiues_scaling, obj.p_gyro_radiues_code)
 end
@@ -490,24 +491,23 @@ end
 
 
 # ------------- Example usage---------------------------
-base = BaseUnits("CGS")
-
-eps_0_scaling = 1e0; mu_0_scaling = 1e0; charge_scaling = 1e0; electron_mass_scaling = 1e0
-scale_base_units(base, eps_0_scaling, mu_0_scaling, charge_scaling, electron_mass_scaling)
-
-#The below scaling values sets c_code=1, mass_density_code=1 and scales time so t_code=1 corresponds to one electron plasma period
-number_density=1e10; length=1e5; temperature=1e6; temperature_e=1e6; temperature_p=1e6; B_flux=1e1; length_scale=33.389197328881565; mass_density_scale=1.673532836356e-14; time_scale=1.1137437396400933e-9
-
-scaling = ScalingCGS(base,
-                number_density, length, temperature, temperature_e, temperature_p, B_flux,
-                length_scale, mass_density_scale, time_scale)
-
-
-
-ds = 0.1
-per_cell = 10.
-
-set_macro_particle_weights(scaling, ds, per_cell)
-
-print_all_CGS(scaling)
+#base = BaseUnits("CGS")
+#
+#eps_0_scaling = 1e0; mu_0_scaling = 1e0; charge_scaling = 1e0; electron_mass_scaling = 1e0
+#scale_base_units(base, eps_0_scaling, mu_0_scaling, charge_scaling, electron_mass_scaling)
+#
+##The below scaling values sets c_code=1, mass_density_code=1 and scales time so t_code=1 corresponds to one electron plasma period
+#number_density=1e10; length=1e5; temperature=1e6; temperature_e=1e6; temperature_p=1e6; B_flux=1e1; length_scale=33.389197328881565; mass_density_scale=1.673532836356e-14; time_scale=1.1137437396400933e-9
+#
+#scaling = ScalingCGS(base,
+#                number_density, length, temperature, temperature_e, temperature_p, B_flux,
+#                length_scale, mass_density_scale, time_scale)
+#
+#
+#
+#ds = 0.1
+#per_cell = 10.
+#
+#set_macro_particle_weights(scaling, ds, per_cell)
+#print_all_CGS(scaling)
 #------------------------------------------------------------------------------------------
