@@ -228,9 +228,10 @@ function set_derived_real_values(obj::ScalingCGS)
     obj.u_real = obj.length_real / obj.time_real
 
 
-    # Calculate Alfven velocity [cm/s] and rescale if necessary
+    # Calculate Alfven velocity [cm/s] and rescale... 
     obj.v_a_real = obj.B_flux_real / sqrt(4 * π * obj.mass_density_real)
-    obj.v_a_real *= obj.c_real / sqrt(obj.v_a_real^2 + obj.c_real^2)
+    obj.v_a_real *= obj.c_real / sqrt(obj.v_a_real^2 + obj.c_real^2) # rescaling only changes the actual value if v_a is close to the speed of light
+    #TODO - double check scaling does not change anything
 
     # Calculate electron and proton thermal velocities [cm/s]
     obj.v_thermal_e_real = sqrt(obj.k_B_real * obj.temperature_e_real / obj.m_e_real)
@@ -251,11 +252,11 @@ function set_derived_real_values(obj::ScalingCGS)
     obj.p_gyro_radiues_real = obj.v_thermal_p_real / obj.proton_gyro_freq_real
 
     # Calculate other derived values
-    obj.mass_real = obj.mass_density_real * obj.length_real^3
-    obj.energy_real = obj.mass_real * obj.u_real^2
-    obj.energy_per_mass_real = obj.energy_real / obj.mass_real
-    obj.energy_per_volume_real = obj.energy_real / obj.length_real^3
-    obj.pressure_real = obj.number_density_real * obj.k_B_real * obj.temperature_real
+    obj.mass_real = obj.mass_density_real * obj.length_real^3                         # [ g ]
+    obj.energy_real = obj.mass_real * obj.u_real^2                                    # [ erg ]
+    obj.energy_per_mass_real = obj.energy_real / obj.mass_real                        # [ erg  g^-1]
+    obj.energy_per_volume_real = obj.energy_real / obj.length_real^3                  # [ erg  cm^-3]
+    obj.pressure_real = obj.number_density_real * obj.k_B_real * obj.temperature_real # [ Ba ]
 end
 
 function set_scaling_factors(obj::ScalingCGS)
