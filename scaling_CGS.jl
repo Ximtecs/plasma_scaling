@@ -20,6 +20,7 @@ mutable struct ScalingCGS
     length_scaling::Float64            # Length scaling factor
     mass_density_scaling::Float64      # Mass density scaling factor
     time_scaling::Float64              # Time scaling factor
+    temperature_scaling :: Float64     # Temperature scaling factor
 
     # Base physical constants (from BaseUnits)
     base_units::BaseUnits
@@ -83,7 +84,7 @@ mutable struct ScalingCGS
     p_gyro_radiues_scaling::Float64
     mass_scaling::Float64
     B_flux_scaling :: Float64
-    temperature_scaling::Float64
+    #temperature_scaling::Float64
     temperature_e_scaling::Float64
     temperature_p_scaling::Float64
     energy_scaling::Float64
@@ -167,9 +168,9 @@ mutable struct ScalingCGS
 
 
 
-    function ScalingCGS(base_units, number_density=1e15, length=1e8, temperature=1e6, temperature_e=1e6, temperature_p=1e6, B_flux=1e1, length_scale=3e8, mass_density_scale=1e-13, time_scale=1.0)
+    function ScalingCGS(base_units, number_density=1e15, length=1e8, temperature=1e6, temperature_e=1e6, temperature_p=1e6, B_flux=1e1, length_scale=3e8, mass_density_scale=1e-13, time_scale=1.0, temperature_scale=1e6)
         system = base_units.system
-        obj = new(system, number_density, length, temperature, temperature_e, temperature_p, B_flux, length_scale, mass_density_scale, time_scale, base_units)
+        obj = new(system, number_density, length, temperature, temperature_e, temperature_p, B_flux, length_scale, mass_density_scale, time_scale,temperature_scale, base_units)
         # Additional initialization and calculations for derived values
         copy_base_units(obj)
         set_derived_real_values(obj)
@@ -291,9 +292,9 @@ function set_scaling_factors(obj::ScalingCGS)
     obj.B_flux_scaling = 1.0 / sqrt(obj.length_scaling) * sqrt(obj.mass_scaling) / obj.time_scaling
     obj.number_density_scaling = 1.0 / obj.length_scaling^3
 
-    obj.temperature_scaling = 1.0
-    obj.temperature_e_scaling = 1.0
-    obj.temperature_p_scaling = 1.0
+    obj.temperature_scaling = obj.temperature_scaling
+    obj.temperature_e_scaling = obj.temperature_scaling
+    obj.temperature_p_scaling = obj.temperature_scaling
     obj.mu_scaling = 1.0
 
     # Fundamental constants scaling
