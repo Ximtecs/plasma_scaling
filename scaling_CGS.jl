@@ -257,7 +257,8 @@ function set_derived_real_values(obj::ScalingCGS)
     obj.energy_real = obj.mass_real * obj.u_real^2                                    # [ erg ]
     obj.energy_per_mass_real = obj.energy_real / obj.mass_real                        # [ erg  g^-1]
     obj.energy_per_volume_real = obj.energy_real / obj.length_real^3                  # [ erg  cm^-3]
-    obj.pressure_real = obj.number_density_real * obj.k_B_real * obj.temperature_real # [ Ba ]
+    #multiply with 2 to account for both protons and electrons
+    obj.pressure_real = obj.number_density_real * obj.k_B_real * obj.temperature_real * 2 # [ Ba ]
 end
 
 function set_scaling_factors(obj::ScalingCGS)
@@ -489,6 +490,23 @@ function print_all_CGS(obj::ScalingCGS)
     print_frequencies(obj)
     print_lengths(obj)
     print_other(obj)
+end
+
+function print_basic_info(obj::ScalingCGS)
+    println("lenght                 = ", obj.length_real)
+    println("number_density         = ", obj.number_density_real)
+    println("B                      = ", obj.B_flux_real)
+    println("T                      = ", obj.temperature_real)
+    println("")
+    println("length_scale           = ", obj.length_scaling)
+    println("mass_density_scale     = ", obj.mass_density_scaling)
+    println("time_scale             = ", obj.time_scaling)
+    println("temperature_scale      = ", obj.temperature_scaling)
+    println("")
+    println("e_mass_scale           = ", obj.base_units.m_e_scaling)
+    println("charge_scaling         = ", obj.base_units.charge_scaling)
+    println("eps_0_scaling          = ", obj.base_units.eps_0_scaling)
+    println("mu_0_scaling           = ", obj.base_units.mu_0_scaling)
 end
 
 

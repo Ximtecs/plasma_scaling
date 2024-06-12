@@ -19,6 +19,11 @@ mutable struct BaseUnits
     e::Float64      # Elementary charge (C for SI, StatC for CGS)
     G::Float64      # Gravitational constant (m^3·kg^-1·s^-2 for SI, cm^3·g^-1·s^-2 for CGS)
     eV::Float64     # Electron volt (J for SI, erg for CGS)
+    #-------
+    eps_0_scaling::Float64 
+    mu_0_scaling::Float64 
+    charge_scaling::Float64 
+    m_e_scaling::Float64 
     """
         BaseUnits(system::String)
     Constructor for BaseUnits. Initializes physical constants based on the specified system ('SI' or 'CGS').
@@ -178,6 +183,15 @@ function scale_base_units(units::BaseUnits, eps_0_scaling::Float64, mu_0_scaling
     units.e *= charge_scaling
     units.m_e *= m_e_scaling
 
+
+    units.eps_0_scaling = eps_0_scaling
+    units.mu_0_scaling = mu_0_scaling
+    units.charge_scaling = charge_scaling
+    units.m_e_scaling = m_e_scaling
+
     units.c = 1 / sqrt(units.eps_0 * units.mu_0)
+
+
+
 end
 
