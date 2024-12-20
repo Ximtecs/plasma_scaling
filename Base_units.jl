@@ -6,7 +6,7 @@ using Printf
 A mutable struct representing the base physical units in either the SI or CGS system.
 """
 mutable struct BaseUnits
-    system::String  # The unit system, either 'SI' or 'CGS'
+    system::String  # The unit system, either 'SI', 'CGS', or 'HL'
     # Physical constants
     eps_0::Float64  # Permittivity of free space (units depend on the system)
     mu_0::Float64   # Permeability of free space (units depend on the system)
@@ -27,10 +27,10 @@ mutable struct BaseUnits
     """
         BaseUnits(system::String)
     Constructor for BaseUnits. Initializes physical constants based on the specified system ('SI' or 'CGS').
-    This method checks if the provided system is valid ('SI' or 'CGS') and initializes the struct with the appropriate physical constants.
+    This method checks if the provided system is valid ('SI' or 'CGS', or 'hL) and initializes the struct with the appropriate physical constants.
     """
     function BaseUnits(system::String)
-        new_system = system in ["SI", "CGS"] ? system : throw(Exception("Unit system must be either 'SI' or 'CGS'"))
+        new_system = system in ["SI", "CGS", "HL"] ? system : throw(Exception("Unit system must be either 'SI', 'CGS', or 'HL"))
         obj = new(new_system)
         set_base_physical_values(obj)  # Set the physical constants based on the system
         return obj
@@ -48,6 +48,10 @@ function set_base_physical_values(obj::BaseUnits)
         set_base_physical_values_SI(obj)
     elseif obj.system == "CGS"
         set_base_physical_values_CGS(obj)
+    elseif obj.system == "HL"
+        set_base_physical_values_HL(obj)
+    else
+        throw(Exception("Invalid unit system"))
     end
 end
 
@@ -91,7 +95,38 @@ This function initializes the physical constants in the BaseUnits object with th
 """
 function set_base_physical_values_CGS(obj::BaseUnits)
     # Permittivity of free space in s^2·cm^-2 (seconds squared per centimeter squared)
-    obj.eps_0 = 1.1126500560536184e-21
+    obj.eps_0 = 1.1126500560536184e-21 /  (4 * pi ) 
+    # Permeability of free space, unitless in CGS
+    obj.mu_0  = 4 * pi #1.0
+    # Speed of light in cm/s (centimeters per second), calculated from eps_0 and mu_0
+    obj.c = 1 / sqrt(obj.eps_0 * obj.mu_0)
+    # Planck constant in erg·s (erg seconds)
+    obj.h_p = 6.62607015e-27
+    # Boltzmann constant in erg/K (ergs per kelvin)
+    obj.k_B = 1.38064852e-16
+    # Electron mass in g (grams)
+    obj.m_e = 9.10938356e-28
+    # Proton mass in g (grams)
+    obj.m_p = 1.672621898e-24
+    # Atomic unit mass in g (grams)
+    obj.m_u = 1.66053906660e-24
+    # Elementary charge in StatC (statcoulombs, CGS unit of charge)
+    obj.e   = 4.80320427e-10
+    # Gravitational constant in cm^3·g^-1·s^-2 (cubic centimeters per gram per square second)
+    obj.G   = 6.67430e-8
+    # Electron Volt in erg (ergs)
+    obj.eV  = 1.6021772e-12
+end
+
+"""
+    set_base_physical_values_CGS(obj::BaseUnits)
+
+Sets the base physical values for the CGS (Centimeter-Gram-Second) unit system.
+This function initializes the physical constants in the BaseUnits object with their respective values in the CGS system.
+"""
+function set_base_physical_values_HL(obj::BaseUnits)
+    # Permittivity of free space in s^2·cm^-2 (seconds squared per centimeter squared)
+    obj.eps_0 = 1.1126500560536184e-21 
     # Permeability of free space, unitless in CGS
     obj.mu_0  = 1.0
     # Speed of light in cm/s (centimeters per second), calculated from eps_0 and mu_0
@@ -107,7 +142,7 @@ function set_base_physical_values_CGS(obj::BaseUnits)
     # Atomic unit mass in g (grams)
     obj.m_u = 1.66053906660e-24
     # Elementary charge in StatC (statcoulombs, CGS unit of charge)
-    obj.e   = 4.80320427e-10
+    obj.e   = 4.80320427e-10  * sqrt(4 * pi)
     # Gravitational constant in cm^3·g^-1·s^-2 (cubic centimeters per gram per square second)
     obj.G   = 6.67430e-8
     # Electron Volt in erg (ergs)
@@ -171,6 +206,25 @@ function print_all_CGS(obj::BaseUnits)
 end
 
 
+"""
+    print_all_HL(obj::BaseUnits)
+
+Prints all the Heaviside-Lorentz base physical values from the `BaseUnits` object.
+"""
+function print_all_HL(obj::BaseUnits)
+    @printf("CGS base physical values:\n")
+    @printf("     eps_0 = %.4e [s^2·cm^-2] (Permittivity of free space)\n", obj.eps_0)
+    @printf("      mu_0 = %.4e [unitless] (Permeability of free space)\n", obj.mu_0)
+    @printf("         c = %.4e [cm/s] (Speed of light)\n", obj.c)
+    @printf("       h_p = %.4e [erg·s] (Planck constant)\n", obj.h_p)
+    @printf("       k_B = %.4e [erg/K] (Boltzmann constant)\n", obj.k_B)
+    @printf("       m_e = %.4e [g] (Electron mass)\n", obj.m_e)
+    @printf("       m_p = %.4e [g] (Proton mass)\n", obj.m_p)
+    @printf("       m_u = %.4e [g] (Atomic unit mass)\n", obj.m_u)
+    @printf("         e = %.4e [StatC] (Elementary charge)\n", obj.e)
+    @printf("         G = %.4e [cm^3·g^-1·s^-2] (Gravitational constant)\n", obj.G)
+    @printf("        eV = %.4e [erg] (Electron Volt)\n", obj.eV)
+end
 
 """
     scale_base_units(units::BaseUnits, eps_0_scaling::Float64, mu_0_scaling::Float64, m_e_scaling::Float64, charge_scaling::Float64)
