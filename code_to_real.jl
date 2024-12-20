@@ -19,6 +19,16 @@ end
 #------------------------------------------------
 
 
+#-------- struct with the single real value needed to reconstruct all real units ----
+struct real_unit_input
+    number_density ::Float64
+    mass_density :: Float64
+    B_field ::Float64
+    T :: Float64
+end
+#------------------------------------------------
+
+
 #-------- strcut for fudging physical valeus -----------
 struct ratios_and_scaling
     electron_proton_ratio :: Float64
